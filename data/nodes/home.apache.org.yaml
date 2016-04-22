@@ -82,8 +82,6 @@ vhosts_asf::vhosts::vhosts:
     vhost_name: '*'
     port: 80
     servername: 'home.apache.org'
-    serveraliases:
-      - 'people.apache.org'
     default_vhost: true
     docroot: '/var/www/html'
     manage_docroot: false
@@ -104,8 +102,6 @@ vhosts_asf::vhosts::vhosts:
     port: 443
     ssl: true
     servername: 'home.apache.org'
-    serveraliases:
-      - 'people.apache.org'
     serveradmin: 'webmaster@apache.org'
     docroot: '/var/www/html'
     manage_docroot: false
@@ -116,3 +112,32 @@ vhosts_asf::vhosts::vhosts:
       <Directory "/home/*/public_html/">
         Options Indexes MultiViews
       </Directory>
+      
+  # Redirect from old hostnames to home.apache.org, e.g.
+  # http://people.apache.org/anything -> http://home.apache.org/anything
+  # https://people.apache.org/anything -> https://home.apache.org/anything
+  people:
+    vhost_name: '*'
+    port: 80
+    servername: 'people.apache.org'
+    docroot: '/var/www/html'
+    default_vhost: true
+    redirect_status => 'permanent',
+    redirect_dest   => 'http://home.apache.org/'
+    access_log_file: 'people_access.log'
+    error_log_file: 'people_error.log'
+
+  people-ssl:
+    vhost_name: '*'
+    ensure: 'present'
+    port: 443
+    ssl: true
+    default_vhost: true
+    servername: 'people.apache.org'
+    serveradmin: 'webmaster@apache.org'
+    docroot: '/var/www/html'
+    redirect_status => 'permanent',
+    redirect_dest   => 'https://home.apache.org/'
+    access_log_file: 'people-ssl_access.log'
+    error_log_file: 'people-ssl_error.log'  
+  
